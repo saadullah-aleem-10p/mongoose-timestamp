@@ -39,7 +39,7 @@ function timestampsPlugin(schema, options) {
 	    if (this.isNew) {
 		this[updatedAt] = this[createdAt];
 	    } else if (this.isModified()) {
-		this[updatedAt] = new Number;
+		this[updatedAt] = Date.now;
 	    }
 	    next();
 	});
@@ -49,9 +49,9 @@ function timestampsPlugin(schema, options) {
 	schema.add(dataObj);
 	schema.pre('save', function (next) {
 	    if (!this[createdAt]) {
-		this[createdAt] = this[updatedAt] = new Number;
+		this[createdAt] = this[updatedAt] = Date.now;
 	    } else if (this.isModified()) {
-		this[updatedAt] = new Number;
+		this[updatedAt] = Date.now;
 	    }
 	    next();
 	});
@@ -60,9 +60,9 @@ function timestampsPlugin(schema, options) {
     schema.pre('findOneAndUpdate', function (next) {
 	if (this.op === 'findOneAndUpdate') {
 	    this._update = this._update || {};
-	    this._update[updatedAt] = new Number;
+	    this._update[updatedAt] = Date.now;
 	    this._update['$setOnInsert'] = this._update['$setOnInsert'] || {};
-	    this._update['$setOnInsert'][createdAt] = new Number;
+	    this._update['$setOnInsert'][createdAt] = Date.now;
 	}
 	next();
     });
@@ -70,16 +70,16 @@ function timestampsPlugin(schema, options) {
     schema.pre('update', function(next) {
 	if (this.op === 'update') {
 	    this._update = this._update || {};
-	    this._update[updatedAt] = new Number;
+	    this._update[updatedAt] = Date.now;
 	    this._update['$setOnInsert'] = this._update['$setOnInsert'] || {};
-	    this._update['$setOnInsert'][createdAt] = new Number;
+	    this._update['$setOnInsert'][createdAt] = Date.now;
 	}
 	next();
     });
 
     if(!schema.methods.hasOwnProperty('touch'))
 	schema.methods.touch = function(callback){
-	    this[updatedAt] = new Number;
+	    this[updatedAt] = Date.now;
 	    this.save(callback)
 	}
 
